@@ -2,15 +2,13 @@ var express = require('express');
 var router = express.Router();
 
 const MongoClient = require('mongodb').MongoClient;
-const {url,db,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET} = require('./config');
+const {url,db} = require('./config');
 const auth = require('./auth');
 const client = new MongoClient(url);
 const users_c = client.db(db).collection("users");
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
-const GoogleStrategy = require('passport-google-oidc');
-require('dotenv').config();
 
 passport.use(new LocalStrategy(
   {
@@ -31,31 +29,6 @@ passport.use(new LocalStrategy(
   }
 ));
 
-passport.use(new GoogleStrategy({
-  clientID: process.env['GOOGLE_CLIENT_ID'],
-  clientSecret: process.env['GOOGLE_CLIENT_SECRET'],
-  callbackURL: "/login/oauth/google",
-  scope: [ 'profile', 'email' ],
-  passReqToCallback: true
-},
-async function verify(req, issuer, profile, cb) {
-  //firstly, check whether user exist.
-  let type = req.session.type;
-  try{
-    await client.connect();
-    let userExist = await users_c.findOne({loginMethod:"google",googleId:profile.id,type:type});
-    if(!userExist) {
-      
-      let data = {type:type, email:profile.emails[0].value, username:profile.displayName, loginMethod:"google", googleId:profile.id, money:0}
-      if(type=="teacher") data.introduction = "";
-      let userInsert = await users_c.insertOne(data);
-      if(userInsert.acknowledged) cb(null,{_id:userInsert.insertedId});
-    } else return cb(null,userExist);
-  } finally {
-    await client.close();
-  }
-}
-));
 
 /* GET login page. */
 router.get('/',auth.isNotlogin,(req,res)=>{

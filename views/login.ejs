@@ -7,7 +7,6 @@
     <link rel='stylesheet' href='/stylesheets/backgroundImage.css' />
   </head>
   <body>
-    <%- include('audio') %>
     <div class="content">
       <h1><%= title %></h1>
       <%- include('header') %>
@@ -32,8 +31,6 @@
           <input type="password" placeholder="輸入密碼" name="password" minlength="8" required>
       
           <button type="submit" class="registerbtn">登入</button>
-          <br/>
-          <button type="button" class="registerbtn" style="display: inline;" id="googleLogin" onclick="window.location.href='/login/google/student'">Google 登入</button>
           <br/>
           <p id="haveAccountText" style="display: inline;">沒有帳戶?請<a href="/register?type=student" id="registerAction">註冊</a></p>
         </div>
