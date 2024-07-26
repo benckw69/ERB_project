@@ -28,7 +28,7 @@ router.get('/',auth.isNotlogin,(req,res)=>{
     //check whether email exist in the database.
     try {
       await client.connect();
-      const userExist = await users_c.findOne({email:email, type:type});
+      const userExist = await users_c.findOne({email:email, type:type, loginMethod:"email"});
       if(userExist) req.session.messages.push("電郵地址已經存在");
       else {
         //insert data into database
